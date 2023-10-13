@@ -1,4 +1,5 @@
 # react-pdf-html
+NPM link: [@rawwee/react-pdf-html](https://www.npmjs.com/package/@rawwee/react-pdf-html)
 
 `react-pdf-html` is a package that provides components that can render `@react-pdf/renderer` components as HTML components.
 
