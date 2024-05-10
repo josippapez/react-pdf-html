@@ -109,4 +109,4 @@ Contributions are welcome! If you find a bug or want to add a new feature, pleas
 
 ## License
 
-react-pdf-html is licensed under the ISC License.
+react-pdf-html is licensed under the MIT License.
