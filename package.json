@@ -1,6 +1,6 @@
 {
   "name": "@rawwee/react-pdf-html",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Package for rendering @react-pdf/renderer components as HTML components",
   "sideEffects": true,
   "scripts": {
@@ -28,8 +28,8 @@
     "@react-pdf/renderer": "^3.1.14"
   },
   "peerDependencies": {
-    "react": "^16.8.0",
-    "react-dom": "^16.8.0"
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.23.7",
