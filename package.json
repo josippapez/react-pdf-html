@@ -1,6 +1,6 @@
 {
   "name": "@rawwee/react-pdf-html",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Package for rendering @react-pdf/renderer components as HTML components",
   "sideEffects": true,
   "scripts": {
