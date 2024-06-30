@@ -279,21 +279,52 @@ export const CustomLink: FC<PropsLink> = ({ children, style, ...rest }) => {
 
 export const CustomG: FC<PropsG> = ({ children, ...rest }) => {
   if (isHtml) {
-    return <g {...rest}>{children}</g>;
+    let adjustedRest: React.SVGProps<SVGGElement> & { style?: CSSProperties } =
+      {
+        ...rest,
+        strokeLinejoin: "round",
+        style: {
+          strokeLinejoin: "round",
+        },
+      };
+
+    return <g {...adjustedRest}>{children}</g>;
   }
   return <G {...rest}>{children}</G>;
 };
 
 export const CustomPath: FC<PropsPath> = ({ children, ...rest }) => {
   if (isHtml) {
-    return <path {...rest}>{children}</path>;
+    let adjustedRest:
+      | React.SVGProps<SVGPathElement>
+      | { style?: CSSProperties } = {
+      ...rest,
+      strokeLinejoin: "round",
+      style: {
+        ...rest.style,
+        strokeLinejoin: "round",
+      },
+    };
+
+    return <path {...adjustedRest}>{children}</path>;
   }
   return <Path {...rest}>{children}</Path>;
 };
 
 export const CustomRect: FC<PropsRect> = ({ children, ...rest }) => {
   if (isHtml) {
-    return <rect {...rest}>{children}</rect>;
+    let adjustedRest: React.SVGProps<SVGRectElement> & {
+      style?: CSSProperties;
+    } = {
+      ...rest,
+      strokeLinejoin: "round",
+      style: {
+        ...rest.style,
+        strokeLinejoin: "round",
+      },
+    };
+
+    return <rect {...adjustedRest}>{children}</rect>;
   }
   return <Rect {...rest}>{children}</Rect>;
 };
@@ -328,7 +359,17 @@ export const CustomDefs: FC<PropsDefs> = ({ children, ...rest }) => {
 
 export const CustomLine: FC<PropsLine> = ({ children, ...rest }) => {
   if (isHtml) {
-    return <line {...rest}>{children}</line>;
+    let adjustedRest: React.SVGProps<SVGLineElement> & {
+      style?: CSSProperties;
+    } = {
+      ...rest,
+      strokeLinejoin: "round",
+      style: {
+        ...rest.style,
+        strokeLinejoin: "round",
+      },
+    };
+    return <line {...adjustedRest}>{children}</line>;
   }
   return <Line {...rest}>{children}</Line>;
 };
