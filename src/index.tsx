@@ -240,6 +240,7 @@ export const CustomPage: FC<PropsPage> = ({ style, children, ...rest }) => {
           isolation: "isolate",
           height: "100%",
           lineHeight: "initial",
+          flex: 1,
           ...(newStyle as { [key: string]: string }),
         }}
       >
