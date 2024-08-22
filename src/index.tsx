@@ -8,6 +8,7 @@ import {
   Link,
   Page,
   Path,
+  Polygon,
   Rect,
   Stop,
   Svg,
@@ -25,6 +26,7 @@ import {
   PropsLink,
   PropsPage,
   PropsPath,
+  PropsPolygon,
   PropsRect,
   PropsSVG,
   PropsStop,
@@ -81,7 +83,7 @@ const fontWeightConverter = (fontWeight?: fontWeight) => {
 const adjustStyles = (style: Style) => {
   if (!style) return;
 
-  Object.keys(style).forEach(key => {
+  Object.keys(style).forEach((key) => {
     if (key === "paddingVertical") {
       style.paddingTop = style[key];
       style.paddingBottom = style[key];
@@ -99,8 +101,8 @@ const mergeStylesIntoOne = (styles: Style[]) => {
 
   if (!styles[0]) return mergedStyle;
 
-  styles.forEach(style => {
-    Object.keys(style).forEach(key => {
+  styles.forEach((style) => {
+    Object.keys(style).forEach((key) => {
       mergedStyle[key as keyof Style] = style[key as keyof Style];
     });
   });
@@ -121,11 +123,11 @@ export const CustomView: FC<PropsView> = ({ children, style, ...rest }) => {
 
     let styles: CSSProperties = {
       display: "flex",
-      flexDirection: "column",
       position: "relative",
       isolation: "isolate",
       left: 0,
       right: 0,
+
       ...(newStyle as { [key: string]: string }),
     };
 
@@ -350,6 +352,18 @@ export const CustomSVG: FC<PropsSVG> = ({ children, ...rest }) => {
   return <Svg {...rest}>{children}</Svg>;
 };
 
+export const CustomPolygon: FC<PropsPolygon> = ({ style, ...rest }) => {
+  if (isHtml) {
+    let newStyle = {
+      ...style,
+      strokeLinejoin: "round",
+    } as React.CSSProperties | undefined;
+
+    return <polygon style={newStyle} {...rest} />;
+  }
+  return <Polygon {...rest} />;
+};
+
 export const CustomDefs: FC<PropsDefs> = ({ children, ...rest }) => {
   if (isHtml) {
     return <defs {...rest}>{children}</defs>;
@@ -422,6 +436,7 @@ export {
   CustomLink as Link,
   CustomPage as Page,
   CustomPath as Path,
+  CustomPolygon as Polygon,
   CustomRect as Rect,
   CustomStop as Stop,
   CustomSVG as Svg,

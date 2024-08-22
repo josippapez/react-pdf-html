@@ -1,11 +1,11 @@
 import {
+  DocumentProps,
   PageProps,
   SVGPresentationAttributes,
   SourceObject,
   Style,
   TextProps,
   ViewProps,
-  DocumentProps,
 } from "@react-pdf/types";
 import { PropsWithChildren } from "react";
 
@@ -50,6 +50,8 @@ export type PropsLinearGradient = PropsWithChildren<LinearGradientProps>;
 export type PropsDefs = PropsWithChildren;
 
 export type PropsDocument = PropsWithChildren<DocumentProps>;
+
+export type PropsPolygon = React.PropsWithChildren<PropPolygon>;
 
 export type { Style as StylePDF };
 
@@ -145,6 +147,10 @@ interface RectProps extends SVGPresentationAttributes {
   ry?: string | number;
 }
 
+interface PropPolygon {
+  style?: React.CSSProperties | SVGPresentationAttributes;
+  points: string;
+}
 interface PathProps extends SVGPresentationAttributes {
   style?: SVGPresentationAttributes;
   d: string;
