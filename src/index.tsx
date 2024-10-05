@@ -83,7 +83,7 @@ const fontWeightConverter = (fontWeight?: fontWeight) => {
 const adjustStyles = (style: Style) => {
   if (!style) return;
 
-  Object.keys(style).forEach((key) => {
+  Object.keys(style).forEach(key => {
     if (key === "paddingVertical") {
       style.paddingTop = style[key];
       style.paddingBottom = style[key];
@@ -101,8 +101,8 @@ const mergeStylesIntoOne = (styles: Style[]) => {
 
   if (!styles[0]) return mergedStyle;
 
-  styles.forEach((style) => {
-    Object.keys(style).forEach((key) => {
+  styles.forEach(style => {
+    Object.keys(style).forEach(key => {
       mergedStyle[key as keyof Style] = style[key as keyof Style];
     });
   });
@@ -195,7 +195,7 @@ export const CustomText: FC<PropsText> = ({ children, style, ...rest }) => {
   return (
     <Text
       style={{
-        verticalAlign: "sub",
+        verticalAlign: undefined, // middle
         ...newStyle,
       }}
       {...rest}
