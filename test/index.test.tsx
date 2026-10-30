@@ -191,6 +191,30 @@ describe("Link", () => {
     expect(html).toContain('href="https://example.com"');
   });
 
+  test.each([
+    "javascript:alert(1)",
+    " JavaScript:alert(1)",
+    "java\tscript:alert(1)",
+    "data:text/html,<script>alert(1)</script>",
+  ])("drops the unsafe link %j in HTML", (src) => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const html = renderToStaticMarkup(<Link src={src}>a</Link>);
+
+    expect(html).not.toContain("href=");
+  });
+
+  test.each([
+    "https://example.com",
+    "mailto:ana@example.com",
+    "tel:+385123",
+    "/cv/ana",
+    "#contact",
+  ])("keeps the safe link %j in HTML", (src) => {
+    const html = renderToStaticMarkup(<Link src={src}>a</Link>);
+
+    expect(html).toContain(`href="${src}"`);
+  });
+
   test("does not pass react-pdf props to the anchor", () => {
     const error = vi.spyOn(console, "error").mockImplementation(() => {});
     renderToStaticMarkup(

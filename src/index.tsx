@@ -176,6 +176,21 @@ const svgProps = <P extends object>({
   },
 });
 
+const SAFE_PROTOCOLS = ["http:", "https:", "mailto:", "tel:"];
+
+// Link URLs often come from user input, so a javascript: or data: URL must not
+// become a clickable href. The URL parser strips the whitespace and tab tricks
+// browsers also strip, and relative links resolve to the placeholder base.
+const safeHref = (url?: string) => {
+  if (!url) return undefined;
+  try {
+    const { protocol } = new URL(url, "https://relative.invalid");
+    return SAFE_PROTOCOLS.includes(protocol) ? url : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
 export const CustomView: FC<PropsView> = ({ children, style, ...rest }) => {
   if (useIsHtml()) {
     let styles: CSSProperties = {
@@ -297,7 +312,7 @@ export const CustomLink: FC<PropsLink> = ({ children, style, ...rest }) => {
     return (
       <a
         id={rest.id}
-        href={rest.href ?? rest.src}
+        href={safeHref(rest.href ?? rest.src)}
         target="_blank"
         rel="noopener noreferrer"
       >
