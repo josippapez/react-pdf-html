@@ -1,4 +1,5 @@
 import type {
+  Canvas,
   Circle,
   ClipPath,
   Defs,
@@ -22,7 +23,7 @@ import type {
   Tspan,
   View,
 } from "@react-pdf/renderer";
-import type { ComponentProps, PropsWithChildren } from "react";
+import type { ComponentProps, ComponentType, PropsWithChildren } from "react";
 
 // Props come from the consumer's installed @react-pdf/renderer, so they stay
 // in sync with whichever major version (3 or 4) they use.
@@ -49,3 +50,22 @@ export type PropsClipPath = ComponentProps<typeof ClipPath>;
 export type PropsRadialGradient = ComponentProps<typeof RadialGradient>;
 export type PropsTspan = ComponentProps<typeof Tspan>;
 export type PropsNote = ComponentProps<typeof Note>;
+export type PropsCanvas = ComponentProps<typeof Canvas>;
+
+// Components that only react-pdf 4 has. A named import would not type-check
+// against react-pdf 3, so their props are looked up by name and are never
+// there.
+type ReactPDF = typeof import("@react-pdf/renderer");
+type PropsOf<Name extends string> = Name extends keyof ReactPDF
+  ? ReactPDF[Name] extends ComponentType<infer Props>
+    ? Props
+    : never
+  : never;
+
+export type PropsImageBackground = PropsOf<"ImageBackground">;
+export type PropsMarker = PropsOf<"Marker">;
+export type PropsFieldSet = PropsOf<"FieldSet">;
+export type PropsTextInput = PropsOf<"TextInput">;
+export type PropsCheckbox = PropsOf<"Checkbox">;
+export type PropsSelect = PropsOf<"Select">;
+export type PropsList = PropsOf<"List">;

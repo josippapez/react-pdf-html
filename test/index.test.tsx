@@ -1,22 +1,32 @@
 import { pdf, renderToBuffer } from "@react-pdf/renderer";
-import React, { ReactElement } from "react";
+import React, { ComponentProps, ReactElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import {
+  Canvas,
+  Checkbox,
   Circle,
   ClipPath,
+  Defs,
   Document,
   Ellipse,
+  FieldSet,
   G,
+  ImageBackground,
   Link,
+  List,
+  Marker,
   Note,
   Page,
+  Path,
   Polygon,
   Polyline,
   RadialGradient,
   RenderAsPDF,
+  Select,
   Svg,
   Text,
+  TextInput,
   Tspan,
   View,
   usePDFComponentsAreHTML,
@@ -311,6 +321,14 @@ describe("a document using every component", () => {
     "RADIAL_GRADIENT",
     "STOP",
     "CLIP_PATH",
+    "MARKER",
+    "CANVAS",
+    "IMAGE_BACKGROUND",
+    "FIELD_SET",
+    "TEXT_INPUT",
+    "CHECKBOX",
+    "SELECT",
+    "LIST",
   ];
   const tags = [
     "div",
@@ -333,6 +351,12 @@ describe("a document using every component", () => {
     "radialGradient",
     "stop",
     "clipPath",
+    "marker",
+    "canvas",
+    "fieldset",
+    "input",
+    "select",
+    "option",
   ];
 
   test("renders as HTML without React warnings", () => {
@@ -364,5 +388,161 @@ describe("a document using every component", () => {
     );
     const pdfText = buffer.toString("latin1");
     expect(pdfText.match(/\/Type \/Page\b/g)).toHaveLength(2);
+  });
+});
+
+describe("Page size", () => {
+  test.each<[string, ComponentProps<typeof Page>, string, string]>([
+    ["the default A4", {}, "width:595.28px", "min-height:841.89px"],
+    [
+      "a named landscape size",
+      { size: "LETTER", orientation: "landscape" },
+      "width:792px",
+      "min-height:612px",
+    ],
+    [
+      "a size in points",
+      { size: [300, 400] },
+      "width:300px",
+      "min-height:400px",
+    ],
+    [
+      "a size in inches",
+      { size: ["8.5in", "11in"] },
+      "width:612px",
+      "min-height:792px",
+    ],
+  ])("renders %s like react-pdf", (_, props, width, minHeight) => {
+    const html = renderToStaticMarkup(<Page {...props} />);
+
+    expect(html).toContain(width);
+    expect(html).toContain(minHeight);
+  });
+
+  test("grows with its content when no height is given", () => {
+    const html = renderToStaticMarkup(<Page size={{ width: 200 }} />);
+
+    expect(html).toContain("width:200px");
+    expect(html).not.toContain("min-height");
+  });
+
+  test("renders the layout prop around the page content", () => {
+    const html = renderToStaticMarkup(
+      <Page
+        layout={({ children, pageNumber }) => (
+          <View>
+            <Text>{`Header ${pageNumber}`}</Text>
+            {children}
+          </View>
+        )}
+      >
+        <Text>Body</Text>
+      </Page>,
+    );
+
+    expect(html).toContain("Header 1");
+    expect(html).toContain("Body");
+  });
+});
+
+describe("react-pdf 4 components", () => {
+  test("ImageBackground draws its image behind the children", () => {
+    const html = renderToStaticMarkup(
+      <ImageBackground
+        src="https://example.com/a.png"
+        style={{ width: 100, height: 50, objectFit: "cover" }}
+      >
+        <Text>Over</Text>
+      </ImageBackground>,
+    );
+
+    expect(html).toContain("background-image:url(");
+    expect(html).toContain("background-size:cover");
+    expect(html).toContain("Over");
+  });
+
+  test("Marker renders an SVG marker", () => {
+    const html = renderToStaticMarkup(
+      <Svg>
+        <Defs>
+          <Marker id="arrow" markerWidth={4} markerHeight={4}>
+            <Path d="M0 0 L4 2 L0 4 Z" />
+          </Marker>
+        </Defs>
+      </Svg>,
+    );
+
+    expect(html).toContain('<marker id="arrow"');
+  });
+
+  test("form fields render as native form controls", () => {
+    const html = renderToStaticMarkup(
+      <FieldSet name="profile">
+        <TextInput name="first" defaultValue="Ana" />
+        <TextInput name="bio" multiline value="Hi" />
+        <Checkbox name="ok" checked />
+        <Select
+          name="lang"
+          select={["en", "hr"]}
+          value="hr"
+          edit={false}
+          noSpell={false}
+        />
+        <List
+          name="skills"
+          select={["a", "b", "c"]}
+          edit={false}
+          noSpell={false}
+        />
+      </FieldSet>,
+    );
+
+    expect(html).toMatch(/<fieldset[^>]*name="profile"/);
+    expect(html).toMatch(/<input[^>]*name="first"[^>]*value="Ana"/);
+    expect(html).toMatch(/<textarea[^>]*name="bio"[^>]*>Hi<\/textarea>/);
+    expect(html).toMatch(/<input[^>]*type="checkbox"[^>]*checked/);
+    expect(html).toMatch(/<option[^>]*value="hr"[^>]*selected/);
+    expect(html).toMatch(/<select[^>]*name="skills"[^>]*size="3"/);
+  });
+
+  test("render react-pdf's own components in the PDF", () => {
+    const tree = renderPdfTree(
+      inDocument(
+        <View>
+          <ImageBackground src="https://example.com/a.png" />
+          <Canvas paint={() => null} />
+          <Svg>
+            <Defs>
+              <Marker id="m" />
+            </Defs>
+          </Svg>
+          <FieldSet name="f">
+            <TextInput name="t" />
+            <Checkbox name="c" />
+            <Select name="s" select={["a"]} edit={false} noSpell={false} />
+            <List name="l" select={["a"]} edit={false} noSpell={false} />
+          </FieldSet>
+        </View>,
+      ),
+    );
+    const types = new Set<string>();
+    const collect = (node: PdfNode) => {
+      types.add(node.type);
+      node.children?.forEach(collect);
+    };
+    collect(tree);
+
+    expect([...types]).toEqual(
+      expect.arrayContaining([
+        "IMAGE_BACKGROUND",
+        "CANVAS",
+        "MARKER",
+        "FIELD_SET",
+        "TEXT_INPUT",
+        "CHECKBOX",
+        "SELECT",
+        "LIST",
+      ]),
+    );
   });
 });

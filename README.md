@@ -59,16 +59,24 @@ To branch inside your own components, read the mode with `usePDFComponentsAreHTM
 
 ## Components
 
-`Document`, `Page`, `View`, `Text`, `Link`, `Image`, `Note`, and the SVG components `Svg`, `G`, `Path`, `Rect`, `Line`, `Polyline`, `Polygon`, `Circle`, `Ellipse`, `Tspan`, `Defs`, `ClipPath`, `LinearGradient`, `RadialGradient` and `Stop`.
+Every react-pdf component: `Document`, `Page`, `View`, `Text`, `Link`, `Image`, `Note` and `Canvas`, and the SVG components `Svg`, `G`, `Path`, `Rect`, `Line`, `Polyline`, `Polygon`, `Circle`, `Ellipse`, `Tspan`, `Defs`, `ClipPath`, `LinearGradient`, `RadialGradient` and `Stop`.
 
-`Text` inside `Svg` renders as SVG text. `Note` renders nothing in HTML.
+These need react-pdf 4: `ImageBackground`, `Marker` and the form fields `FieldSet`, `TextInput`, `Checkbox`, `Select` and `List`.
 
-Not included: `Canvas`, and the components that only exist in react-pdf 4 (`ImageBackground`, `Marker` and the form fields).
+In HTML:
+
+- `Page` has its `size` and `orientation`, A4 by default.
+- `render` props and Page `layout` get the page's number and the page count.
+- `Canvas` runs your `paint` function on an HTML canvas.
+- `Text` inside `Svg` renders as SVG text.
+- Form fields become native inputs.
+- `Note` renders nothing.
 
 ## Differences from the PDF
 
-- `Page` fills its container in HTML. Give the container the page size, for example 595 x 842 for A4.
-- Page breaks, `fixed`, `render` and other pagination props have no effect in HTML.
+- HTML has no page breaks. A page grows past its height instead of moving content to the next page, so each `Page` counts as one page.
+- `fixed` and other pagination props have no effect in HTML.
+- `Canvas` gradients draw nothing in either output, because react-pdf's painter does not return them.
 - In react-pdf 4, a unitless `lineHeight` on an element without its own `fontSize` is multiplied by 18, not by the inherited font size. Set `fontSize` next to it so the preview and the PDF match.
 
 ## Development

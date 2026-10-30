@@ -1,15 +1,21 @@
 import React from "react";
 import {
+  Canvas,
+  Checkbox,
   Circle,
   ClipPath,
   Defs,
   Document,
   Ellipse,
+  FieldSet,
   G,
   Image,
+  ImageBackground,
   Line,
   LinearGradient,
   Link,
+  List,
+  Marker,
   Note,
   Page,
   Path,
@@ -17,9 +23,11 @@ import {
   Polyline,
   RadialGradient,
   Rect,
+  Select,
   Stop,
   Svg,
   Text,
+  TextInput,
   Tspan,
   View,
 } from "../src/index";
@@ -119,7 +127,28 @@ const SkillBar = ({ name, level }: { name: string; level: number }) => (
 
 const Chart = () => (
   <Svg width={300} height={110} viewBox="0 0 300 110">
-    <Line x1={30} y1={90} x2={290} y2={90} stroke="#999" strokeWidth={1} />
+    <Defs>
+      <Marker
+        id="arrow"
+        viewBox="0 0 10 10"
+        refX={5}
+        refY={5}
+        markerWidth={6}
+        markerHeight={6}
+        orient="auto"
+      >
+        <Path d="M 0 0 L 10 5 L 0 10 z" fill="#999" />
+      </Marker>
+    </Defs>
+    <Line
+      x1={30}
+      y1={90}
+      x2={290}
+      y2={90}
+      stroke="#999"
+      strokeWidth={1}
+      markerEnd="url(#arrow)"
+    />
     <Line x1={30} y1={10} x2={30} y2={90} stroke="#999" strokeWidth={1} />
     <Polyline
       points="30,80 80,64 130,70 180,40 230,30 280,14"
@@ -135,6 +164,64 @@ const Chart = () => (
       <Tspan>2025</Tspan>
     </Text>
   </Svg>
+);
+
+const PageNumber = () => (
+  <Text
+    fixed
+    style={{
+      position: "absolute",
+      bottom: 16,
+      right: 24,
+      width: 40,
+      textAlign: "right",
+      fontSize: 8,
+      color: "#777",
+    }}
+    render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`}
+  />
+);
+
+const Bars = () => (
+  <Canvas
+    style={{ width: 240, height: 80, marginTop: 8 }}
+    paint={(painter, width, height) => {
+      [3, 5, 4, 7].forEach((value, index) => {
+        const barHeight = (value / 7) * (height - 10);
+        painter
+          .rect(index * 60 + 10, height - barHeight, 40, barHeight)
+          .fill(index === 3 ? "#d9822b" : accent);
+      });
+      painter.moveTo(0, height).lineTo(width, height).lineWidth(1).stroke("#999");
+      return null;
+    }}
+  />
+);
+
+const Feedback = () => (
+  <FieldSet name="feedback" style={{ marginTop: 16 }}>
+    <Text style={styles.heading}>Feedback</Text>
+    <TextInput name="email" defaultValue="ana@example.com" style={{ width: 240, height: 20 }} />
+    <View style={[styles.row, { alignItems: "center", marginTop: 6 }]}>
+      <Checkbox name="contact" checked style={{ width: 12, height: 12 }} />
+      <Text style={{ marginLeft: 6 }}>Contact me</Text>
+    </View>
+    <Select
+      name="role"
+      select={["Frontend", "Backend", "Design"]}
+      value="Frontend"
+      edit={false}
+      noSpell={false}
+      style={{ width: 240, height: 20, marginTop: 6 }}
+    />
+    <List
+      name="tools"
+      select={["Vite", "Figma", "Docker"]}
+      edit={false}
+      noSpell={false}
+      style={{ width: 240, height: 48, marginTop: 6 }}
+    />
+  </FieldSet>
 );
 
 export const Showcase = ({ highlight = false }: { highlight?: boolean }) => (
@@ -232,9 +319,18 @@ export const Showcase = ({ highlight = false }: { highlight?: boolean }) => (
         </View>
         <Note>Reviewed in October</Note>
       </View>
+      <PageNumber />
     </Page>
 
     <Page size="A4" style={[styles.page, { padding: 40 }]}>
+      <ImageBackground
+        src={avatar}
+        style={{ height: 80, marginBottom: 16, objectFit: "cover", justifyContent: "flex-end", padding: 8 }}
+      >
+        <Text style={{ color: "white", fontSize: 16, fontWeight: "bold" }}>
+          Ana Horvat
+        </Text>
+      </ImageBackground>
       <Text style={styles.heading}>Projects</Text>
       {["Design system", "Invoice builder", "PDF previewer"].map(
         (name, index) => (
@@ -253,6 +349,9 @@ export const Showcase = ({ highlight = false }: { highlight?: boolean }) => (
           </View>
         ),
       )}
+      <Bars />
+      <Feedback />
+      <PageNumber />
     </Page>
   </Document>
 );
