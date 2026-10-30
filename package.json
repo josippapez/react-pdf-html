@@ -1,13 +1,13 @@
 {
   "name": "@rawwee/react-pdf-html",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "description": "Package for rendering @react-pdf/renderer components as HTML components",
   "sideEffects": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rm -rf dist",
-    "build": "npm run clean && npm run build:core",
-    "build:core": "microbundle src/*.tsx --jsx React.createElement --jsxFragment React.Fragment"
+    "test": "vitest run",
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build"
   },
   "repository": {
     "type": "git",
@@ -24,45 +24,33 @@
     "url": "https://github.com/josippapez/react-pdf-html/issues"
   },
   "homepage": "https://github.com/josippapez/react-pdf-html#readme",
-  "dependencies": {
-    "@react-pdf/renderer": "^3.4.4"
-  },
   "peerDependencies": {
-    "react": ">=16.8.0",
-    "react-dom": ">=16.8.0"
+    "@react-pdf/renderer": "^3.4.4 || ^4.0.0",
+    "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.24.7",
-    "@rollup/plugin-babel": "^6.0.4",
-    "@rollup/plugin-commonjs": "^26.0.1",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "babel-core": "^6.26.3",
-    "babel-runtime": "^6.26.0",
-    "microbundle": "^0.15.1",
-    "prettier": "^3.3.2",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "rollup": "^4.18.0",
-    "rollup-plugin-sass": "^1.13.0",
-    "rollup-plugin-typescript2": "^0.36.0",
-    "typescript": "^5.5.2"
+    "@react-pdf/renderer": "^4.9.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "prettier": "^3.9.10",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tsdown": "^0.23.4",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
   },
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.esm.mjs",
-  "umd:main": "dist/index.umd.js",
-  "unpkg": "dist/index.umd.js",
-  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "packageManager": "pnpm@12.16.1",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "require": "./dist/index.js",
-      "import": "./dist/index.esm.mjs",
-      "umd": "./dist/index.umd.js"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     },
     "./package.json": "./package.json"
   }

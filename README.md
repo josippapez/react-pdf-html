@@ -1,106 +1,87 @@
 # react-pdf-html
 
-`react-pdf-html` is a package that provides components that can render `@react-pdf/renderer` components as HTML components.
-
-This provides an alternative for rendering PDF on the fly to check the final PDF and it enables having one source of truth for your PDF templates/components.
+`react-pdf-html` gives you drop-in replacements for the `@react-pdf/renderer` components that render as plain HTML in the browser. Write your PDF template once, show it on the page as HTML for a fast live preview, and hand the same template to react-pdf when you need the real PDF.
 
 ## Installation
 
-You can install `react-pdf-html` using npm/yarn/bun:
-
 ```bash
-npm install @rawwee/react-pdf-html
+pnpm add @rawwee/react-pdf-html @react-pdf/renderer
 ```
+
+It works with `@react-pdf/renderer` 3 and 4. The test suite runs against react-pdf 4.9 with React 19, and against 3.4 with React 18.
 
 ## Usage
 
-To use `react-pdf-html`, you need to import the components you want to use from the package and render them in your React application as you would when using `@react-pdf/renderer`. Here's an example:
-
-#### Example when displaying it in application
+Import the components from this package instead of `@react-pdf/renderer`:
 
 ```tsx
-import React from "react";
-// this replaces @react-pdf/renderer components
-import { Document, Image, Page, View } from "@rawwee/react-pdf-html";
+import { Document, Page, Text, View } from "@rawwee/react-pdf-html";
 
-const MyDocument = () => (
+export const MyDocument = () => (
   <Document>
     <Page>
-      <Text>Hello, World!</Text>
+      <View>
+        <Text>Hello, World!</Text>
+      </View>
     </Page>
   </Document>
 );
-
-// You can then render the component as an HTML component
-const App = () => <MyDocument />;
-
-export default App;
 ```
 
-In this example, we're rendering a simple PDF document with a single page that contains the text "Hello, World!". We're using the PDFViewer component from react-pdf-html to render the PDF as an HTML component.
+Rendered anywhere in your app, `<MyDocument />` shows as HTML.
 
-As you can see, you don't need the `@react-pdf/renderer`'s `PDFViewer` component to render the PDF (or `Document` component from `wojtekmaj/react-pdf`).
+### Making the PDF
 
-#### Example when rendering the PDF
-
-The package provides a useful hook called `usePDFComponentsAreHTML()` which enables (or disables) the rendering of the components as HTML components. This is useful when you want to render the PDF conditionally (e.g. when you want to download the PDF).
+Wrap the document in `RenderAsPDF` wherever you hand it to react-pdf. Everything inside renders as react-pdf components, while the HTML preview elsewhere on the page keeps working:
 
 ```tsx
-export const PDFDownload = ({ PdfInstance, show, closeModal }: Props) => {
-  const { isHTML, setHtml } = usePDFComponentsAreHTML();
-  const [download, setDownload] = useState(false);
+import { PDFDownloadLink, pdf } from "@react-pdf/renderer";
+import { RenderAsPDF } from "@rawwee/react-pdf-html";
 
-  useEffect(() => {
-    if (show) {
-      // triggers the rendering of the PDF template component
-      // which is defined as:
-      // const TemplateNotHtml = useCallback(() => CVTemplate(pdfData), [isHTML, pdfData]);
-      setHtml(false);
-    }
-  }, [show]);
+const pdfDocument = (
+  <RenderAsPDF>
+    <MyDocument />
+  </RenderAsPDF>
+);
 
-  return (
-    <Modal
-      show={show}
-      position="center"
-      closeModal={() => {
-        setHtml(true);
-        setDownload(false);
-      }}
-    >
-      <div>
-        <h1 className="text-2xl font-bold">Download CV</h1>
-        <div>
-          {PdfInstance &&
-            (download ? (
-              <PDFDownloadLink
-                className="w-full bg-blue-500 p-2 text-center font-bold text-white shadow-[0_0_20px_-5px] hover:shadow-blue-800 focus:shadow-blue-800"
-                document={!isHTML ? <PdfInstance /> : <></>}
-                fileName={`${cvName}.pdf`}
-              >
-                {({ blob, url, loading, error }) => {
-                  if (loading) return "Loading document...";
-                  return "Download now!";
-                }}
-              </PDFDownloadLink>
-            ) : (
-              <button
-                className="w-full bg-blue-500 p-2 text-center font-bold text-white shadow-[0_0_20px_-5px] hover:shadow-blue-800 focus:shadow-blue-800"
-                onClick={() => setDownload(true)}
-              >
-                Download
-              </button>
-            ))}
-        </div>
-      </div>
-    </Modal>
-  );
-};
+// A download link
+<PDFDownloadLink document={pdfDocument} fileName="document.pdf">
+  Download
+</PDFDownloadLink>;
+
+// Or a Blob
+const blob = await pdf(pdfDocument).toBlob();
 ```
-As you can see, we're using the `usePDFComponentsAreHTML()` hook to set the `isHTML` value to `false` when the modal is shown. This triggers the rendering of the PDF template component. When the modal is closed, we set the `isHTML` value to `true` which triggers the rendering of the PDF as an HTML component.
+
+To branch inside your own components, read the mode with `usePDFComponentsAreHTML()`. Its `isHTML` is `false` inside `RenderAsPDF`.
+
+`usePDFComponentsAreHTML().setHtml(false)` still switches every component to PDF mode at once, for code written before `RenderAsPDF` existed.
+
+## Components
+
+`Document`, `Page`, `View`, `Text`, `Link`, `Image`, `Note`, and the SVG components `Svg`, `G`, `Path`, `Rect`, `Line`, `Polyline`, `Polygon`, `Circle`, `Ellipse`, `Tspan`, `Defs`, `ClipPath`, `LinearGradient`, `RadialGradient` and `Stop`.
+
+`Text` inside `Svg` renders as SVG text. `Note` renders nothing in HTML.
+
+Not included: `Canvas`, and the components that only exist in react-pdf 4 (`ImageBackground`, `Marker` and the form fields).
+
+## Differences from the PDF
+
+- `Page` fills its container in HTML. Give the container the page size, for example 595 x 842 for A4.
+- Page breaks, `fixed`, `render` and other pagination props have no effect in HTML.
+- In react-pdf 4, a unitless `lineHeight` on an element without its own `fontSize` is multiplied by 18, not by the inherited font size. Set `fontSize` next to it so the preview and the PDF match.
+
+## Development
+
+```bash
+pnpm install
+pnpm test
+pnpm typecheck
+pnpm build
+```
 
 ## Used by
-You can check the usage for this package in the following projects:
+
 - [CV Maker [josippapez/CV-Maker]](https://github.com/josippapez/CV-Maker)
 
 ## Contributing

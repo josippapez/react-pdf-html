@@ -1,0 +1,15 @@
+# Supply-chain settings, see https://pnpm.io/supply-chain-security
+
+# Only install versions published at least a day ago. Setting it explicitly
+# also turns on minimumReleaseAgeStrict.
+minimumReleaseAge: 1440
+
+# Fail if a package's publish trust level drops compared to earlier releases.
+trustPolicy: no-downgrade
+
+# Fail the install when a dependency has a build script that is not listed
+# in allowBuilds.
+strictDepBuilds: true
+
+# Transitive dependencies must come from the registry, not git or tarball URLs.
+blockExoticSubdeps: true

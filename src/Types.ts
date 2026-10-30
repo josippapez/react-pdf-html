@@ -1,179 +1,51 @@
-import {
-  DocumentProps,
-  PageProps,
-  SVGPresentationAttributes,
-  SourceObject,
-  Style,
-  TextProps,
-  ViewProps,
-} from "@react-pdf/types";
-import { PropsWithChildren } from "react";
+import type {
+  Circle,
+  ClipPath,
+  Defs,
+  Document,
+  Ellipse,
+  G,
+  Image,
+  Line,
+  LinearGradient,
+  Link,
+  Note,
+  Page,
+  Path,
+  Polygon,
+  Polyline,
+  RadialGradient,
+  Rect,
+  Stop,
+  Svg,
+  Text,
+  Tspan,
+  View,
+} from "@react-pdf/renderer";
+import type { ComponentProps, PropsWithChildren } from "react";
 
-export type { Style };
-
-export interface PropsView extends PropsWithChildren<ViewProps> {
-  style?: Style | Style[];
-}
-
-export interface PropsText extends PropsWithChildren<TextProps> {
-  style?: Style | Style[];
-}
-
-export interface PropsImage extends ImageWithSrcProp {
-  style?: Style | Style[];
-}
-
-export interface PropsPage extends PropsWithChildren<PageProps> {
-  style?: Style | Style[];
-}
-
-export interface PropsLink extends PropsWithChildren<LinkProps> {
-  style?: Style | Style[];
-}
-
-export interface PropsSVG extends PropsWithChildren<SVGProps> {
-  style?: Style | Style[];
-}
-
-export type PropsRect = PropsWithChildren<RectProps>;
-
-export type PropsPath = PropsWithChildren<PathProps>;
-
-export type PropsG = PropsWithChildren<SVGPresentationAttributes>;
-
-export type PropsLine = PropsWithChildren<LineProps>;
-
-export type PropsStop = PropsWithChildren<StopProps>;
-
-export type PropsLinearGradient = PropsWithChildren<LinearGradientProps>;
-
-export type PropsDefs = PropsWithChildren;
-
-export type PropsDocument = PropsWithChildren<DocumentProps>;
-
-export type PropsPolygon = React.PropsWithChildren<PropPolygon>;
-
-export type { Style as StylePDF };
-
-export type fontWeight =
-  | number
-  | "thin"
-  | "hairline"
-  | "ultralight"
-  | "extralight"
-  | "light"
-  | "normal"
-  | "medium"
-  | "semibold"
-  | "demibold"
-  | "bold"
-  | "ultrabold"
-  | "extrabold"
-  | "heavy"
-  | "black";
-
-// react-pdf/ types
-interface NodeProps {
-  id?: string;
-  style?: Style | Style[];
-  /**
-   * Render component in all wrapped pages.
-   * @see https://react-pdf.org/advanced#fixed-components
-   */
-  fixed?: boolean;
-  /**
-   * Force the wrapping algorithm to start a new page when rendering the
-   * element.
-   * @see https://react-pdf.org/advanced#page-breaks
-   */
-  break?: boolean;
-  /**
-   * Hint that no page wrapping should occur between all sibling elements following the element within n points
-   * @see https://react-pdf.org/advanced#orphan-&-widow-protection
-   */
-  minPresenceAhead?: number;
-}
-
-interface BaseImageProps extends NodeProps {
-  /**
-   * Enables debug mode on page bounding box.
-   * @see https://react-pdf.org/advanced#debugging
-   */
-  debug?: boolean;
-  cache?: boolean;
-}
-
-interface ImageWithSrcProp extends BaseImageProps {
-  src: SourceObject;
-}
-
-interface ImageWithSourceProp extends BaseImageProps {
-  source: SourceObject;
-}
-
-interface LinkProps extends NodeProps {
-  /**
-   * Enable/disable page wrapping for element.
-   * @see https://react-pdf.org/components#page-wrapping
-   */
-  wrap?: boolean;
-  /**
-   * Enables debug mode on page bounding box.
-   * @see https://react-pdf.org/advanced#debugging
-   */
-  debug?: boolean;
-  src: string;
-}
-
-interface SVGProps extends NodeProps {
-  /**
-   * Enables debug mode on page bounding box.
-   * @see https://react-pdf.org/advanced#debugging
-   */
-  debug?: boolean;
-  width?: string | number;
-  height?: string | number;
-  viewBox?: string;
-  preserveAspectRatio?: string;
-}
-
-interface RectProps extends SVGPresentationAttributes {
-  style?: SVGPresentationAttributes;
-  x: string | number;
-  y: string | number;
-  width: string | number;
-  height: string | number;
-  rx?: string | number;
-  ry?: string | number;
-}
-
-interface PropPolygon {
-  style?: React.CSSProperties | SVGPresentationAttributes;
-  points: string;
-}
-interface PathProps extends SVGPresentationAttributes {
-  style?: SVGPresentationAttributes;
-  d: string;
-}
-
-interface LineProps extends SVGPresentationAttributes {
-  style?: SVGPresentationAttributes;
-  x1: string | number;
-  x2: string | number;
-  y1: string | number;
-  y2: string | number;
-}
-
-interface StopProps {
-  offset: string | number;
-  stopColor: string;
-  stopOpacity?: string | number;
-}
-
-interface LinearGradientProps {
-  id: string;
-  x1: string | number;
-  x2: string | number;
-  y1: string | number;
-  y2: string | number;
-}
+// Props come from the consumer's installed @react-pdf/renderer, so they stay
+// in sync with whichever major version (3 or 4) they use.
+export type PropsView = ComponentProps<typeof View>;
+// react-pdf types SVG text (Text inside Svg) without children.
+export type PropsText = PropsWithChildren<ComponentProps<typeof Text>>;
+export type PropsImage = ComponentProps<typeof Image>;
+export type PropsPage = ComponentProps<typeof Page>;
+export type PropsLink = ComponentProps<typeof Link>;
+export type PropsSVG = ComponentProps<typeof Svg>;
+export type PropsRect = ComponentProps<typeof Rect>;
+export type PropsPath = ComponentProps<typeof Path>;
+export type PropsG = ComponentProps<typeof G>;
+export type PropsLine = ComponentProps<typeof Line>;
+export type PropsStop = ComponentProps<typeof Stop>;
+export type PropsLinearGradient = ComponentProps<typeof LinearGradient>;
+export type PropsDefs = ComponentProps<typeof Defs>;
+export type PropsDocument = ComponentProps<typeof Document>;
+export type PropsPolygon = ComponentProps<typeof Polygon>;
+export type PropsPolyline = ComponentProps<typeof Polyline>;
+export type PropsCircle = ComponentProps<typeof Circle>;
+export type PropsEllipse = ComponentProps<typeof Ellipse>;
+export type PropsClipPath = ComponentProps<typeof ClipPath>;
+export type PropsRadialGradient = ComponentProps<typeof RadialGradient>;
+export type PropsTspan = ComponentProps<typeof Tspan>;
+export type PropsNote = ComponentProps<typeof Note>;
