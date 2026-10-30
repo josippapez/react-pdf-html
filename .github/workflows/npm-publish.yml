@@ -8,6 +8,8 @@ on:
 
 permissions:
   contents: read
+  # Lets pnpm publish through npm trusted publishing instead of a token.
+  id-token: write
 
 jobs:
   publish-npm:
@@ -23,7 +25,3 @@ jobs:
       - run: pnpm test
       - run: pnpm build
       - run: pnpm publish --no-git-checks
-        env:
-          # pnpm expands ${NPM_TOKEN} itself.
-          pnpm_config__auth: '{"https://registry.npmjs.org":{"@":{"authToken":"${NPM_TOKEN}"}}}'
-          NPM_TOKEN: ${{ secrets.npm_token }}
